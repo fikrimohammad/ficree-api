@@ -5,6 +5,7 @@ import (
 	"github.com/fikrimohammad/ficree-api/app/models"
 )
 
+// IUserService represents UserService
 type IUserService interface {
 	Show(id int) (models.User, error)
 	Create(params inputs.UserCreateInput) (models.User, error)
