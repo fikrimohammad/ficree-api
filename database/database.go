@@ -3,6 +3,7 @@ package database
 import (
 	"fmt"
 
+	"github.com/fikrimohammad/ficree-api/app/models"
 	"github.com/fikrimohammad/ficree-api/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -45,4 +46,9 @@ func Connect() {
 	if err != nil {
 		panic("Error when connecting to database")
 	}
+}
+
+// Migrate is a function to run database migrations
+func Migrate() {
+	db.AutoMigrate(&models.User{})
 }

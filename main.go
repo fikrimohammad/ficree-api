@@ -21,6 +21,7 @@ func main() {
 	config.LoadAppConfig()
 
 	database.Connect()
+	database.Migrate()
 
 	router := AppRouter()
 	router.RegisterAPI(app)
