@@ -5,6 +5,7 @@ import (
 
 	"github.com/fikrimohammad/ficree-api/config"
 	"github.com/fikrimohammad/ficree-api/database"
+	"github.com/fikrimohammad/ficree-api/routes"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -23,7 +24,7 @@ func main() {
 	database.Connect()
 	database.Migrate()
 
-	router := AppRouter()
+	router := routes.AppRouter()
 	router.RegisterAPI(app)
 
 	log.Fatal(app.Listen(":3000"))
