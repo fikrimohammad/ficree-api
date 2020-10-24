@@ -1,16 +1,27 @@
-FROM golang:1.14 AS build
+FROM golang:alpine as builder
 
-WORKDIR /go/src/build
+LABEL maintainer="Mohammad Fikri <fikri.mohammad30@gmail.com>"
+
+RUN apk update && apk add --no-cache git
+
+WORKDIR /app
+
+COPY go.mod go.sum ./
+
+RUN go mod download 
+
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o ./app ./main.go
+
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o ficree-api .
 
 FROM alpine:latest
+RUN apk --no-cache add ca-certificates
 
-WORKDIR /go/src/deploy
-COPY --from=build /go/src/build .
-RUN chmod +x ./app
+WORKDIR /root/
 
-# You might need to change this settings according to your configuration
+COPY --from=builder /app/ficree-api .
+COPY --from=builder /app/config/application.yml ./config       
+
 EXPOSE 3000
 
-CMD ["./app"]
+CMD ["./ficree-api"]
