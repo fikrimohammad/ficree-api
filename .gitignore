@@ -5,7 +5,7 @@
 *.so
 *.dylib
 ficree-api
-
+config/application.yml
 # Test binary, built with `go test -c`
 *.test
 
