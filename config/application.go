@@ -16,6 +16,7 @@ func LoadAppConfig() {
 	provider.SetConfigName("application")
 	provider.SetConfigType("yml")
 	provider.AddConfigPath("./config")
+	provider.AddConfigPath(".")
 
 	setDefaultDatabaseConfig(provider)
 
@@ -31,7 +32,7 @@ func LoadAppConfig() {
 }
 
 func setDefaultDatabaseConfig(provider *viper.Viper) {
-	provider.SetDefault("DB_HOST", "127.0.0.1")
+	provider.SetDefault("DB_HOST", "localhost")
 	provider.SetDefault("DB_PORT", "5432")
 	provider.SetDefault("DB_USERNAME", "postgres")
 	provider.SetDefault("DB_PASSWORD", "postgres")
