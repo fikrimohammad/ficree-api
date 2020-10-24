@@ -35,5 +35,5 @@ func setDefaultDatabaseConfig(provider *viper.Viper) {
 	provider.SetDefault("DB_PORT", "5432")
 	provider.SetDefault("DB_USERNAME", "postgres")
 	provider.SetDefault("DB_PASSWORD", "postgres")
-	provider.SetDefault("DB_NAME", "ficree-development")
+	provider.SetDefault("DB_NAME", "ficree_development")
 }
