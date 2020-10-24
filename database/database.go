@@ -44,7 +44,20 @@ func Connect() {
 	)
 	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		panic("Error when connecting to database")
+		msg := fmt.Sprintf(
+			"Error when connecting to %s on %s:%s\n",
+			dbConfig.Name,
+			dbConfig.Host,
+			dbConfig.Port,
+		)
+		panic(msg)
+	} else {
+		fmt.Printf(
+			"Connected to %s on %s:%s\n",
+			dbConfig.Name,
+			dbConfig.Host,
+			dbConfig.Port,
+		)
 	}
 }
 
