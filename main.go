@@ -28,5 +28,4 @@ func main() {
 	router.RegisterAPI(app)
 
 	log.Fatal(app.Listen(":3000"))
-
 }

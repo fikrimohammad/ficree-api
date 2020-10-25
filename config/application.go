@@ -13,10 +13,7 @@ func Instance() *viper.Viper {
 // LoadAppConfig is a function to load application configuration
 func LoadAppConfig() {
 	provider := viper.New()
-	provider.SetConfigName("application")
-	provider.SetConfigType("yml")
-	provider.AddConfigPath("./config")
-	provider.AddConfigPath(".")
+	provider.SetConfigFile(".env")
 
 	setDefaultDatabaseConfig(provider)
 
@@ -32,9 +29,9 @@ func LoadAppConfig() {
 }
 
 func setDefaultDatabaseConfig(provider *viper.Viper) {
-	provider.SetDefault("DB_HOST", "localhost")
-	provider.SetDefault("DB_PORT", "5432")
-	provider.SetDefault("DB_USERNAME", "postgres")
-	provider.SetDefault("DB_PASSWORD", "postgres")
-	provider.SetDefault("DB_NAME", "ficree_development")
+	provider.SetDefault("DATABASE_HOST", "localhost")
+	provider.SetDefault("POSTGRES_PORT", "5432")
+	provider.SetDefault("POSTGRES_USER", "postgres")
+	provider.SetDefault("POSTGRES_PASSWORD", "postgres")
+	provider.SetDefault("POSTGRES_DB", "ficree_development")
 }

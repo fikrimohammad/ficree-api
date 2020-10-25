@@ -11,11 +11,11 @@ import (
 
 // DBConfig is a struct to store database configuration
 type DBConfig struct {
-	Host     string `mapstructure:"db_host"`
-	Port     string `mapstructure:"db_port"`
-	Username string `mapstructure:"db_username"`
-	Password string `mapstructure:"db_password"`
-	Name     string `mapstructure:"db_name"`
+	Host     string `mapstructure:"database_host"`
+	Port     string `mapstructure:"postgres_port"`
+	Username string `mapstructure:"postgres_user"`
+	Password string `mapstructure:"postgres_password"`
+	Name     string `mapstructure:"postgres_db"`
 }
 
 var db *gorm.DB

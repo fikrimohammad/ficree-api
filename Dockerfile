@@ -20,7 +20,7 @@ RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 
 COPY --from=builder /app/ficree-api .
-COPY --from=builder /app/config/application.yml .       
+COPY --from=builder /app/.env .       
 
 EXPOSE 3000
 
