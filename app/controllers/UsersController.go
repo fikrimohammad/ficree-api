@@ -5,6 +5,7 @@ import (
 
 	inputs "github.com/fikrimohammad/ficree-api/app/inputs/users"
 	"github.com/fikrimohammad/ficree-api/app/interfaces"
+	"github.com/fikrimohammad/ficree-api/app/presenters"
 	"github.com/fikrimohammad/ficree-api/app/services"
 	"github.com/gofiber/fiber/v2"
 )
@@ -27,8 +28,14 @@ func (c *UsersController) All(ctx *fiber.Ctx) error {
 			"error": err.Error(),
 		})
 	}
+
+	results := []map[string]interface{}{}
+	for _, user := range users {
+		result := presenters.NewUserPresenter(user, "minimal_format").Result()
+		results = append(results, result)
+	}
 	return ctx.Status(200).JSON(fiber.Map{
-		"data": users,
+		"data": results,
 	})
 }
 
@@ -49,7 +56,7 @@ func (c *UsersController) Show(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.Status(200).JSON(fiber.Map{
-		"data": user,
+		"data": presenters.NewUserPresenter(user, "detail_format").Result(),
 	})
 }
 
@@ -70,7 +77,7 @@ func (c *UsersController) Create(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.Status(201).JSON(fiber.Map{
-		"data": user,
+		"data": presenters.NewUserPresenter(user, "detail_format").Result(),
 	})
 }
 
@@ -98,7 +105,7 @@ func (c *UsersController) Update(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.Status(200).JSON(fiber.Map{
-		"data": user,
+		"data": presenters.NewUserPresenter(user, "detail_format").Result(),
 	})
 }
 
@@ -119,6 +126,6 @@ func (c *UsersController) Destroy(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.Status(200).JSON(fiber.Map{
-		"data": user,
+		"data": presenters.NewUserPresenter(user, "detail_format").Result(),
 	})
 }
