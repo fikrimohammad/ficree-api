@@ -23,6 +23,7 @@ func (router *router) RegisterAPI(app *fiber.App) {
 func registerUsersAPI(api fiber.Router) {
 	controller := ServiceContainer().InjectUsersController()
 	usersAPI := api.Group("/users")
+	usersAPI.Get("/", controller.All)
 	usersAPI.Get("/:id", controller.Show)
 	usersAPI.Post("/", controller.Create)
 	usersAPI.Patch("/:id", controller.Update)

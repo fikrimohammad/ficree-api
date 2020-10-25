@@ -7,6 +7,7 @@ import (
 
 // IUserService represents UserService
 type IUserService interface {
+	All() (models.Users, error)
 	Show(id int) (models.User, error)
 	Create(params inputs.UserCreateInput) (models.User, error)
 	Update(id int, params inputs.UserUpdateInput) (models.User, error)

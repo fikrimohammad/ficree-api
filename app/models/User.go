@@ -15,3 +15,6 @@ type User struct {
 	Summary        string
 	Title          string
 }
+
+// Users represents list of User
+type Users []User

@@ -17,6 +17,12 @@ func NewUserService(repo *repositories.UserRepository) *UserService {
 	return &UserService{repo: repo}
 }
 
+// All is a service for showing all active users
+func (svc *UserService) All() (models.Users, error) {
+	users, err := svc.repo.List()
+	return users, err
+}
+
 // Show is a service for showing a user by ID
 func (svc *UserService) Show(id int) (models.User, error) {
 	user, err := svc.repo.Find(id)

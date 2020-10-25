@@ -15,6 +15,13 @@ func NewUserRepository(conn *gorm.DB) *UserRepository {
 	return &UserRepository{db: conn}
 }
 
+// List is a function to fetch all active users
+func (repo *UserRepository) List() (models.Users, error) {
+	users := models.Users{}
+	err := repo.db.Find(&users).Error
+	return users, err
+}
+
 // Find is a function to find an user by ID
 func (repo *UserRepository) Find(id int) (models.User, error) {
 	user := models.User{}

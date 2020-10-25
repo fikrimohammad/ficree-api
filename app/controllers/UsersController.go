@@ -19,6 +19,19 @@ func NewUsersController(svc *services.UserService) UsersController {
 	return UsersController{svc: svc}
 }
 
+// All is an API to fetch all active users
+func (c *UsersController) All(ctx *fiber.Ctx) error {
+	users, err := c.svc.All()
+	if err != nil {
+		return ctx.Status(400).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+	return ctx.Status(200).JSON(fiber.Map{
+		"data": users,
+	})
+}
+
 // Show is an API to find an user by ID
 func (c *UsersController) Show(ctx *fiber.Ctx) error {
 	id, parseIntErr := strconv.Atoi(ctx.Params("id"))
