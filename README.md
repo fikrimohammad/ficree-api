@@ -1,2 +1,2 @@
 # Ficree-API
-https://goreportcard.com/badge/github.com/fikrimohammad/ficree-api
+[![Go Report Card](https://goreportcard.com/badge/github.com/fikrimohammad/ficree-api)](https://goreportcard.com/report/github.com/fikrimohammad/ficree-api)
