@@ -9,5 +9,7 @@ type Skill struct {
 	Description string
 	Rating      int
 	UserID      int
-	User        User
 }
+
+// Skills represents array of Skill
+type Skills []Skill

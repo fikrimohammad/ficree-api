@@ -64,4 +64,5 @@ func Connect() {
 // Migrate is a function to run database migrations
 func Migrate() {
 	db.AutoMigrate(&models.User{})
+	db.AutoMigrate(&models.Skill{})
 }

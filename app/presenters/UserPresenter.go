@@ -41,5 +41,16 @@ func (out *UserPresenter) detailFormat() map[string]interface{} {
 	output["linkedin_url"] = out.User.LinkedinURL
 	output["twitter_url"] = out.User.TwitterURL
 	output["summary"] = out.User.Summary
+	output["skills"] = out.skillOutput()
 	return output
+}
+
+func (out *UserPresenter) skillOutput() []map[string]interface{} {
+	skills := out.User.Skills
+	outputs := []map[string]interface{}{}
+	for _, skill := range skills {
+		output := NewSkillPresenter(skill, "").Result()
+		outputs = append(outputs, output)
+	}
+	return outputs
 }

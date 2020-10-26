@@ -14,6 +14,7 @@ type User struct {
 	TwitterURL     string
 	Summary        string
 	Title          string
+	Skills         Skills
 }
 
 // Users represents list of User
