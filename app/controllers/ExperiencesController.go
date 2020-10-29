@@ -10,19 +10,19 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// UsersController is a controller to handle APIs for User
-type UsersController struct {
-	svc interfaces.IUserService
+// ExperiencesController is a controller to handle APIs for Experience
+type ExperiencesController struct {
+	svc interfaces.IExperienceService
 }
 
-// NewUsersController is a function to initialize UsersController
-func NewUsersController(svc *services.UserService) UsersController {
-	return UsersController{svc: svc}
+// NewExperiencesController is a function to initialize ExperiencesController
+func NewExperiencesController(svc *services.ExperienceService) ExperiencesController {
+	return ExperiencesController{svc: svc}
 }
 
-// All is an API to fetch all active users
-func (c *UsersController) All(ctx *fiber.Ctx) error {
-	users, err := c.svc.All()
+// All is an API to fetch all active experiences
+func (c *ExperiencesController) All(ctx *fiber.Ctx) error {
+	experiences, err := c.svc.All()
 	if err != nil {
 		return ctx.Status(400).JSON(fiber.Map{
 			"error": err.Error(),
@@ -30,8 +30,8 @@ func (c *UsersController) All(ctx *fiber.Ctx) error {
 	}
 
 	results := []map[string]interface{}{}
-	for _, user := range users {
-		result := presenters.NewUserPresenter(user, "minimalFormat").Result()
+	for _, experience := range experiences {
+		result := presenters.NewExperiencePresenter(experience, "").Result()
 		results = append(results, result)
 	}
 	return ctx.Status(200).JSON(fiber.Map{
@@ -39,8 +39,8 @@ func (c *UsersController) All(ctx *fiber.Ctx) error {
 	})
 }
 
-// Show is an API to find an user by ID
-func (c *UsersController) Show(ctx *fiber.Ctx) error {
+// Show is an API to find an experience by ID
+func (c *ExperiencesController) Show(ctx *fiber.Ctx) error {
 	id, parseIntErr := strconv.Atoi(ctx.Params("id"))
 	if parseIntErr != nil {
 		return ctx.Status(422).JSON(fiber.Map{
@@ -48,7 +48,7 @@ func (c *UsersController) Show(ctx *fiber.Ctx) error {
 		})
 	}
 
-	user, err := c.svc.Show(id)
+	experience, err := c.svc.Show(id)
 	if err != nil {
 		return ctx.Status(404).JSON(fiber.Map{
 			"error": err.Error(),
@@ -56,20 +56,20 @@ func (c *UsersController) Show(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.Status(200).JSON(fiber.Map{
-		"data": presenters.NewUserPresenter(user, "").Result(),
+		"data": presenters.NewExperiencePresenter(experience, "").Result(),
 	})
 }
 
-// Create is an API to create an user
-func (c *UsersController) Create(ctx *fiber.Ctx) error {
-	input, inputErr := inputs.NewUserCreateInput(ctx)
+// Create is an API to create an experience
+func (c *ExperiencesController) Create(ctx *fiber.Ctx) error {
+	input, inputErr := inputs.NewExperienceCreateInput(ctx)
 	if inputErr != nil {
 		return ctx.Status(422).JSON(fiber.Map{
 			"error": inputErr.Error(),
 		})
 	}
 
-	user, err := c.svc.Create(input)
+	experience, err := c.svc.Create(input)
 	if err != nil {
 		return ctx.Status(422).JSON(fiber.Map{
 			"error": err.Error(),
@@ -77,12 +77,12 @@ func (c *UsersController) Create(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.Status(201).JSON(fiber.Map{
-		"data": presenters.NewUserPresenter(user, "").Result(),
+		"data": presenters.NewExperiencePresenter(experience, "").Result(),
 	})
 }
 
-// Update is an API to update an user
-func (c *UsersController) Update(ctx *fiber.Ctx) error {
+// Update is an API to update an experience
+func (c *ExperiencesController) Update(ctx *fiber.Ctx) error {
 	id, parseIntErr := strconv.Atoi(ctx.Params("id"))
 	if parseIntErr != nil {
 		return ctx.Status(422).JSON(fiber.Map{
@@ -90,14 +90,14 @@ func (c *UsersController) Update(ctx *fiber.Ctx) error {
 		})
 	}
 
-	input, inputErr := inputs.NewUserUpdateInput(ctx)
+	input, inputErr := inputs.NewExperienceUpdateInput(ctx)
 	if inputErr != nil {
 		return ctx.Status(422).JSON(fiber.Map{
 			"error": inputErr.Error(),
 		})
 	}
 
-	user, err := c.svc.Update(id, input)
+	experience, err := c.svc.Update(id, input)
 	if err != nil {
 		return ctx.Status(404).JSON(fiber.Map{
 			"error": err.Error(),
@@ -105,12 +105,12 @@ func (c *UsersController) Update(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.Status(200).JSON(fiber.Map{
-		"data": presenters.NewUserPresenter(user, "").Result(),
+		"data": presenters.NewExperiencePresenter(experience, "").Result(),
 	})
 }
 
-// Destroy is an API to destroy an user
-func (c *UsersController) Destroy(ctx *fiber.Ctx) error {
+// Destroy is an API to destroy an experience
+func (c *ExperiencesController) Destroy(ctx *fiber.Ctx) error {
 	id, parseIntErr := strconv.Atoi(ctx.Params("id"))
 	if parseIntErr != nil {
 		return ctx.Status(422).JSON(fiber.Map{
@@ -118,7 +118,7 @@ func (c *UsersController) Destroy(ctx *fiber.Ctx) error {
 		})
 	}
 
-	user, err := c.svc.Destroy(id)
+	experience, err := c.svc.Destroy(id)
 	if err != nil {
 		return ctx.Status(404).JSON(fiber.Map{
 			"errors": err.Error(),
@@ -126,6 +126,6 @@ func (c *UsersController) Destroy(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.Status(200).JSON(fiber.Map{
-		"data": presenters.NewUserPresenter(user, "").Result(),
+		"data": presenters.NewExperiencePresenter(experience, "").Result(),
 	})
 }

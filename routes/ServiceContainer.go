@@ -13,6 +13,7 @@ import (
 type IServiceContainer interface {
 	InjectUsersController() controllers.UsersController
 	InjectSkillsController() controllers.SkillsController
+	InjectExperiencesController() controllers.ExperiencesController
 }
 
 type kernel struct{}
@@ -30,6 +31,14 @@ func (k *kernel) InjectSkillsController() controllers.SkillsController {
 	repo := repositories.NewSkillRepository(dbConn)
 	svc := services.NewSkillService(repo)
 	controller := controllers.NewSkillsController(svc)
+	return controller
+}
+
+func (k *kernel) InjectExperiencesController() controllers.ExperiencesController {
+	dbConn := database.Instance()
+	repo := repositories.NewExperienceRepository(dbConn)
+	svc := services.NewExperienceService(repo)
+	controller := controllers.NewExperiencesController(svc)
 	return controller
 }
 

@@ -3,7 +3,7 @@ package controllers
 import (
 	"strconv"
 
-	inputs "github.com/fikrimohammad/ficree-api/app/inputs/skills"
+	"github.com/fikrimohammad/ficree-api/app/inputs"
 	"github.com/fikrimohammad/ficree-api/app/interfaces"
 	"github.com/fikrimohammad/ficree-api/app/presenters"
 	"github.com/fikrimohammad/ficree-api/app/services"

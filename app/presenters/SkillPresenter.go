@@ -10,10 +10,11 @@ type SkillPresenter struct {
 
 // NewSkillPresenter is a function to initialize a SkillPresenter instance
 func NewSkillPresenter(skill models.Skill, formatType string) *SkillPresenter {
-	return &SkillPresenter{
-		Skill:      skill,
-		FormatType: formatType,
+	presenter := SkillPresenter{Skill: skill, FormatType: formatType}
+	if presenter.FormatType == "" {
+		presenter.FormatType = "format"
 	}
+	return &presenter
 }
 
 // Result is a function to select which format to be used for building the output

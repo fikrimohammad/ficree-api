@@ -1,7 +1,7 @@
 package services
 
 import (
-	inputs "github.com/fikrimohammad/ficree-api/app/inputs/users"
+	"github.com/fikrimohammad/ficree-api/app/inputs"
 	"github.com/fikrimohammad/ficree-api/app/interfaces"
 	"github.com/fikrimohammad/ficree-api/app/models"
 	"github.com/fikrimohammad/ficree-api/app/repositories"

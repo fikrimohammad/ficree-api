@@ -15,6 +15,7 @@ type User struct {
 	Summary        string
 	Title          string
 	Skills         Skills
+	Experiences    Experiences
 }
 
 // Users represents list of User

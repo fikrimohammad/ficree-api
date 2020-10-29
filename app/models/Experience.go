@@ -16,5 +16,7 @@ type Experience struct {
 	CompanyName  string
 	Location     string
 	UserID       int
-	User         User
 }
+
+// Experiences represents array of Experience
+type Experiences []Experience

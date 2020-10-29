@@ -25,7 +25,7 @@ func (repo *UserRepository) List() (models.Users, error) {
 // Find is a function to find an user by ID
 func (repo *UserRepository) Find(id int) (models.User, error) {
 	user := models.User{}
-	err := repo.db.Preload("Skills").First(&user, id).Error
+	err := repo.db.Preload("Skills").Preload("Experiences").First(&user, id).Error
 	return user, err
 }
 

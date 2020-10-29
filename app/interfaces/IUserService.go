@@ -1,7 +1,7 @@
 package interfaces
 
 import (
-	inputs "github.com/fikrimohammad/ficree-api/app/inputs/users"
+	"github.com/fikrimohammad/ficree-api/app/inputs"
 	"github.com/fikrimohammad/ficree-api/app/models"
 )
 
