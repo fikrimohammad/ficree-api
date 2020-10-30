@@ -11,11 +11,13 @@ import (
 
 // DBConfig is a struct to store database configuration
 type DBConfig struct {
-	Host     string `mapstructure:"database_host"`
-	Port     string `mapstructure:"postgres_port"`
-	Username string `mapstructure:"postgres_user"`
-	Password string `mapstructure:"postgres_password"`
-	Name     string `mapstructure:"postgres_db"`
+	Host        string `mapstructure:"db_host"`
+	Port        string `mapstructure:"db_port"`
+	Username    string `mapstructure:"db_user"`
+	Password    string `mapstructure:"db_password"`
+	Name        string `mapstructure:"db_name"`
+	MaxIdleConn int    `mapstructure:"db_max_idle_conn"`
+	MaxOpenConn int    `mapstructure:"db_max_open_conn"`
 }
 
 var db *gorm.DB
@@ -33,7 +35,7 @@ func Connect() {
 		panic(configErr.Error())
 	}
 
-	var err error
+	var connErr error
 	dsn := fmt.Sprintf(
 		"user=%s password=%s dbname=%s host=%s port=%s sslmode=disable",
 		dbConfig.Username,
@@ -42,8 +44,8 @@ func Connect() {
 		dbConfig.Host,
 		dbConfig.Port,
 	)
-	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil {
+	db, connErr = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if connErr != nil {
 		msg := fmt.Sprintf(
 			"Error when connecting to %s on %s:%s\n",
 			dbConfig.Name,
@@ -59,6 +61,13 @@ func Connect() {
 			dbConfig.Port,
 		)
 	}
+
+	sqlDB, dbErr := db.DB()
+	if dbErr != nil {
+		panic(dbErr)
+	}
+	sqlDB.SetMaxIdleConns(dbConfig.MaxIdleConn)
+	sqlDB.SetMaxOpenConns(dbConfig.MaxOpenConn)
 }
 
 // Migrate is a function to run database migrations

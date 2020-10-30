@@ -1,6 +1,8 @@
 package config
 
-import "github.com/spf13/viper"
+import (
+	"github.com/spf13/viper"
+)
 
 // AppConfig is a variable to store application config
 var appConfig *viper.Viper
@@ -29,9 +31,11 @@ func LoadAppConfig() {
 }
 
 func setDefaultDatabaseConfig(provider *viper.Viper) {
-	provider.SetDefault("DATABASE_HOST", "localhost")
-	provider.SetDefault("POSTGRES_PORT", "5432")
-	provider.SetDefault("POSTGRES_USER", "postgres")
-	provider.SetDefault("POSTGRES_PASSWORD", "postgres")
-	provider.SetDefault("POSTGRES_DB", "ficree_development")
+	provider.SetDefault("DB_HOST", "localhost")
+	provider.SetDefault("DB_PORT", "5432")
+	provider.SetDefault("DB_USER", "postgres")
+	provider.SetDefault("DB_PASSWORD", "postgres")
+	provider.SetDefault("DB_NAME", "ficree_development")
+	provider.SetDefault("DB_MAX_IDLE_CONN", 5)
+	provider.SetDefault("DB_MAX_OPEN_CONN", 5)
 }
