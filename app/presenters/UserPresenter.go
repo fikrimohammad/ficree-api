@@ -46,6 +46,7 @@ func (out *UserPresenter) format() map[string]interface{} {
 	output["summary"] = out.User.Summary
 	output["skills"] = out.skillOutput()
 	output["experiences"] = out.experienceOutput()
+	output["educations"] = out.educationOutput()
 	return output
 }
 
@@ -64,6 +65,16 @@ func (out *UserPresenter) experienceOutput() []map[string]interface{} {
 	outputs := []map[string]interface{}{}
 	for _, experience := range experiences {
 		output := NewExperiencePresenter(experience, "").Result()
+		outputs = append(outputs, output)
+	}
+	return outputs
+}
+
+func (out *UserPresenter) educationOutput() []map[string]interface{} {
+	educations := out.User.Educations
+	outputs := []map[string]interface{}{}
+	for _, education := range educations {
+		output := NewEducationPresenter(education, "").Result()
 		outputs = append(outputs, output)
 	}
 	return outputs

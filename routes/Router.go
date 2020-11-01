@@ -20,6 +20,7 @@ func (router *router) RegisterAPI(app *fiber.App) {
 	registerUsersAPI(api)
 	registerSkillsAPI(api)
 	registerExperiencesAPI(api)
+	registerEducationsAPI(api)
 }
 
 func registerUsersAPI(api fiber.Router) {
@@ -50,6 +51,16 @@ func registerExperiencesAPI(api fiber.Router) {
 	experiencesAPI.Post("/", controller.Create)
 	experiencesAPI.Patch("/:id", controller.Update)
 	experiencesAPI.Delete("/:id", controller.Destroy)
+}
+
+func registerEducationsAPI(api fiber.Router) {
+	controller := ServiceContainer().InjectEducationsController()
+	educationsAPI := api.Group("/educations")
+	educationsAPI.Get("/", controller.All)
+	educationsAPI.Get("/:id", controller.Show)
+	educationsAPI.Post("/", controller.Create)
+	educationsAPI.Patch("/:id", controller.Update)
+	educationsAPI.Delete("/:id", controller.Destroy)
 }
 
 type router struct{}

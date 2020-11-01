@@ -14,6 +14,7 @@ type IServiceContainer interface {
 	InjectUsersController() controllers.UsersController
 	InjectSkillsController() controllers.SkillsController
 	InjectExperiencesController() controllers.ExperiencesController
+	InjectEducationsController() controllers.EducationsController
 }
 
 type kernel struct{}
@@ -39,6 +40,14 @@ func (k *kernel) InjectExperiencesController() controllers.ExperiencesController
 	repo := repositories.NewExperienceRepository(dbConn)
 	svc := services.NewExperienceService(repo)
 	controller := controllers.NewExperiencesController(svc)
+	return controller
+}
+
+func (k *kernel) InjectEducationsController() controllers.EducationsController {
+	dbConn := database.Instance()
+	repo := repositories.NewEducationRepository(dbConn)
+	svc := services.NewEducationService(repo)
+	controller := controllers.NewEducationsController(svc)
 	return controller
 }
 

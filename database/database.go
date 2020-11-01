@@ -75,4 +75,5 @@ func Migrate() {
 	db.AutoMigrate(&models.User{})
 	db.AutoMigrate(&models.Skill{})
 	db.AutoMigrate(&models.Experience{})
+	db.AutoMigrate(&models.Education{})
 }

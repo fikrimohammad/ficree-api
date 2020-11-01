@@ -12,10 +12,13 @@ type Education struct {
 	InstitutionName    string
 	InstitutionIconURL string
 	InstitutionWebURL  string
+	Description        string
 	StartsAt           time.Time
 	EndsAt             time.Time
 	Degree             string
 	StudyField         string
 	UserID             int
-	User               User
 }
+
+// Educations represents array of Education
+type Educations []Education
