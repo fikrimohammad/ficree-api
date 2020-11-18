@@ -6,7 +6,7 @@ import (
 	"github.com/fikrimohammad/ficree-api/app/controllers"
 	"github.com/fikrimohammad/ficree-api/app/repositories"
 	"github.com/fikrimohammad/ficree-api/app/services"
-	"github.com/fikrimohammad/ficree-api/database"
+	"github.com/fikrimohammad/ficree-api/infrastructures/database"
 )
 
 // IServiceContainer represents ServiceContainer
@@ -15,6 +15,7 @@ type IServiceContainer interface {
 	InjectSkillsController() controllers.SkillsController
 	InjectExperiencesController() controllers.ExperiencesController
 	InjectEducationsController() controllers.EducationsController
+	InjectUploadsController() controllers.UploadsController
 }
 
 type kernel struct{}
@@ -48,6 +49,12 @@ func (k *kernel) InjectEducationsController() controllers.EducationsController {
 	repo := repositories.NewEducationRepository(dbConn)
 	svc := services.NewEducationService(repo)
 	controller := controllers.NewEducationsController(svc)
+	return controller
+}
+
+func (k *kernel) InjectUploadsController() controllers.UploadsController {
+	svc := services.NewUploadService()
+	controller := controllers.NewUploadsController(svc)
 	return controller
 }
 

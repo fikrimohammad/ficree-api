@@ -21,6 +21,7 @@ func (router *router) RegisterAPI(app *fiber.App) {
 	registerSkillsAPI(api)
 	registerExperiencesAPI(api)
 	registerEducationsAPI(api)
+	registerUploadsAPI(api)
 }
 
 func registerUsersAPI(api fiber.Router) {
@@ -61,6 +62,12 @@ func registerEducationsAPI(api fiber.Router) {
 	educationsAPI.Post("/", controller.Create)
 	educationsAPI.Patch("/:id", controller.Update)
 	educationsAPI.Delete("/:id", controller.Destroy)
+}
+
+func registerUploadsAPI(api fiber.Router) {
+	controller := ServiceContainer().InjectUploadsController()
+	uploadsAPI := api.Group("/uploads")
+	uploadsAPI.Get("/presign", controller.Presign)
 }
 
 type router struct{}
