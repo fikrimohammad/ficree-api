@@ -13,7 +13,7 @@ bin = "ficree-api"
 # Customize binary.
 full_bin = "ficree-api"
 # Watch these filename extensions.
-include_ext = ["go", "tpl", "tmpl", "html", "mustache", "hbs", "pug"]
+include_ext = ["go", "tpl", "tmpl", "html", "mustache", "hbs", "pug", "env"]
 # Ignore these filename extensions or directories.
 exclude_dir = ["tmp", "vendor", "node_modules", "public", "resources/assets"]
 # Watch these directories if you specified.
