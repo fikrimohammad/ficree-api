@@ -8,14 +8,17 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// UploadsController is a controller to handle APIs for uploading file
 type UploadsController struct {
 	svc interfaces.IUploadService
 }
 
+// NewUploadsController is a function to initialize UploadsController
 func NewUploadsController(svc *services.UploadService) UploadsController {
 	return UploadsController{svc: svc}
 }
 
+// Presign is an API to create presigned URL for uploading file
 func (c *UploadsController) Presign(ctx *fiber.Ctx) error {
 	input, inputErr := inputs.NewUploadPresignInput(ctx)
 	if inputErr != nil {
