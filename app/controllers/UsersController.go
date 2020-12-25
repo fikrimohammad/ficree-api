@@ -22,7 +22,14 @@ func NewUsersController(svc *services.UserService) UsersController {
 
 // All is an API to fetch all active users
 func (c *UsersController) All(ctx *fiber.Ctx) error {
-	users, err := c.svc.All()
+	input, inputErr := inputs.NewUserListInput(ctx)
+	if inputErr != nil {
+		return ctx.Status(422).JSON(fiber.Map{
+			"error": inputErr.Error(),
+		})
+	}
+
+	users, err := c.svc.All(input.Output())
 	if err != nil {
 		return ctx.Status(400).JSON(fiber.Map{
 			"error": err.Error(),

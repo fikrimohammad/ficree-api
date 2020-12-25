@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"github.com/fikrimohammad/ficree-api/app/models"
+	"github.com/fikrimohammad/ficree-api/app/queries"
 	"gorm.io/gorm"
 )
 
@@ -15,10 +16,11 @@ func NewUserRepository(conn *gorm.DB) *UserRepository {
 	return &UserRepository{db: conn}
 }
 
-// List is a function to fetch all active users
-func (repo *UserRepository) List() (models.Users, error) {
+// List is a function to fetch users
+func (repo *UserRepository) List(params map[string]interface{}) (models.Users, error) {
 	users := models.Users{}
-	err := repo.db.Find(&users).Error
+	scope := queries.NewListUserQuery(repo.db).Filter(params)
+	err := scope.Debug().Find(&users).Error
 	return users, err
 }
 
