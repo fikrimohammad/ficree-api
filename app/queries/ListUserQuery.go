@@ -2,45 +2,52 @@ package queries
 
 import (
 	"fmt"
+	"reflect"
+	"strings"
 
 	"github.com/fikrimohammad/ficree-api/app/models"
 	"gorm.io/gorm"
 )
 
 type ListUserQuery struct {
-	conn *gorm.DB
+	scope *gorm.DB
 }
 
-func NewListUserQuery(conn *gorm.DB) *ListUserQuery {
-	return &ListUserQuery{conn: conn}
+func NewListUserQuery(scope *gorm.DB) *ListUserQuery {
+	return &ListUserQuery{scope: scope}
 }
 
 func (q *ListUserQuery) Filter(options map[string]interface{}) *gorm.DB {
-	scope := q.defaultScope()
-	if len(options) != 0 {
-		scope = q.filterByName(scope, options["name"])
-		scope = q.filterByLimit(scope, options["limit"])
-	}
-	return scope
+	q.setDefaultScope()
+	q.applyFilters(options)
+	return q.scope
 }
 
-func (q *ListUserQuery) filterByName(scope *gorm.DB, name interface{}) *gorm.DB {
-	if name == nil || name == "" {
-		return scope
+func (q *ListUserQuery) applyFilters(options map[string]interface{}) {
+	for key, val := range options {
+		if val == nil || val == "" {
+			continue
+		}
+
+		methodName := fmt.Sprintf("FilterBy%v", strings.Title(key))
+		methodParams := []reflect.Value{}
+		methodParams = append(methodParams, reflect.ValueOf(val))
+		method := reflect.ValueOf(q).MethodByName(methodName)
+		method.Call(methodParams)
 	}
+}
+
+func (q *ListUserQuery) FilterByName(name string) {
 	value := fmt.Sprintf("%%%v%%", name)
-	return scope.Where("name ILIKE ?", value)
+	q.scope = q.scope.Where("name ILIKE ?", value)
 }
 
-func (q *ListUserQuery) filterByLimit(scope *gorm.DB, limit interface{}) *gorm.DB {
-	if limit == nil || limit == "" {
-		return scope.Limit(q.defaultLimit())
-	}
-	return scope.Limit(limit.(int))
+func (q *ListUserQuery) FilterByLimit(limit int) {
+	q.scope = q.scope.Limit(limit)
 }
 
-func (q *ListUserQuery) defaultScope() *gorm.DB {
-	return q.conn.Model(&models.User{})
+func (q *ListUserQuery) setDefaultScope() {
+	q.scope = q.scope.Model(&models.User{}).Limit(q.defaultLimit())
 }
 
 func (q *ListUserQuery) defaultLimit() int {
