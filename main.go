@@ -13,8 +13,21 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/recover"
 )
 
+func defaultErrorHandler(ctx *fiber.Ctx, err error) error {
+	code := fiber.StatusInternalServerError
+	if err != nil {
+		return ctx.Status(code).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+	return nil
+}
+
 func main() {
-	app := fiber.New()
+	appConfig := fiber.Config{
+		ErrorHandler: defaultErrorHandler,
+	}
+	app := fiber.New(appConfig)
 
 	app.Use(logger.New())
 	app.Use(cors.New())
