@@ -8,87 +8,75 @@ import (
 	"github.com/fikrimohammad/ficree-api/config"
 )
 
-type Config struct {
-	AccessKey                  string `mapstructure:"aws_access_key"`
-	SecretKey                  string `mapstructure:"aws_secret_key"`
-	SessionToken               string `mapstructure:"aws_session_token"`
-	Region                     string `mapstructure:"aws_region"`
-	BucketName                 string `mapstructure:"aws_bucket_name"`
-	PresignedURLExpirationTime int    `mapstructure:"aws_presigned_url_expiration_time"`
-	TransferAcceleration       bool   `mapstructure:"aws_transfer_acceleration"`
-	MinioEndpoint              string `mapstructure:"minio_endpoint"`
-	ForcePathStyle             bool   `mapstructure:"force_path_style"`
-}
-
-type Bucket struct {
+// AWSBucket .....
+type AWSBucket struct {
 	Name string
 	URL  string
 }
 
-type Storage struct {
+// AWSStorage .....
+type AWSStorage struct {
 	Config *aws.Config
-	Bucket *Bucket
+	Bucket *AWSBucket
 }
 
-var storageInstance *Storage
+var awsInstance *AWSStorage
 
-// Instance is a function to fetch storage configuration
-func Instance() *Storage {
-	return storageInstance
-}
-
-// Init is a function to initialize storage service
-func Init() {
-	var storageConfig Config
-	configErr := config.Instance().Unmarshal(&storageConfig)
-	if configErr != nil {
-		panic(configErr.Error())
+// GetAWSInstance is a function to fetch storage configuration
+func GetAWSInstance() *AWSStorage {
+	if awsInstance == nil {
+		InitAWSInstance()
 	}
+	return awsInstance
+}
 
+// InitAWSInstance is a function to initialize AWS S3 service
+func InitAWSInstance() {
 	awsCredentials := credentials.NewStaticCredentials(
-		storageConfig.AccessKey,
-		storageConfig.SecretKey,
-		storageConfig.SessionToken,
+		config.Get().AWSAccessKey,
+		config.Get().AWSSecretKey,
+		config.Get().AWSSessionToken,
 	)
 
 	awsConfig := &aws.Config{}
 	awsConfig.Credentials = awsCredentials
-	awsConfig.Region = aws.String(storageConfig.Region)
-	awsConfig.S3UseAccelerate = aws.Bool(storageConfig.TransferAcceleration)
-	if storageConfig.MinioEndpoint != "" {
-		awsConfig.Endpoint = aws.String(storageConfig.MinioEndpoint)
+	awsConfig.Region = aws.String(config.Get().AWSRegion)
+	awsConfig.S3UseAccelerate = aws.Bool(config.Get().AWSTransferAcceleration)
+	awsConfig.S3ForcePathStyle = aws.Bool(config.Get().AWSForcePathStyle)
+	if config.Get().MinioEndpoint != "" {
+		awsConfig.Endpoint = aws.String(config.Get().MinioEndpoint)
 		awsConfig.S3ForcePathStyle = aws.Bool(true)
 	}
 
-	storageBucket := &Bucket{}
-	storageBucket.Name = storageConfig.BucketName
-	storageBucket.URL = buildBucketURL(storageConfig)
+	awsBucket := &AWSBucket{}
+	awsBucket.Name = config.Get().AWSBucketName
+	awsBucket.URL = buildBucketURL()
 
-	storageInstance = &Storage{}
-	storageInstance.Config = awsConfig
-	storageInstance.Bucket = storageBucket
+	awsInstance = &AWSStorage{}
+	awsInstance.Config = awsConfig
+	awsInstance.Bucket = awsBucket
 }
 
-func buildBucketURL(config Config) string {
+func buildBucketURL() string {
 	var bucketURL string
 
-	if config.ForcePathStyle {
-		bucketURL = "http://s3.REGIONNAME.amazonaws.com/BUCKETNAME"
+	if config.Get().AWSForcePathStyle {
+		bucketURL = "https://s3.REGIONNAME.amazonaws.com/BUCKETNAME"
 	} else {
-		bucketURL = "http://BUCKETNAME.s3.REGIONNAME.amazonaws.com"
+		bucketURL = "https://BUCKETNAME.s3.REGIONNAME.amazonaws.com"
 	}
 
-	if config.MinioEndpoint != "" {
+	if config.Get().MinioEndpoint != "" {
 		bucketURL = strings.Replace(
 			bucketURL,
-			"s3.REGIONNAME.amazonaws.com",
-			config.MinioEndpoint,
+			"https://s3.REGIONNAME.amazonaws.com",
+			config.Get().MinioEndpoint,
 			-1,
 		)
 	}
 
-	bucketURL = strings.Replace(bucketURL, "BUCKETNAME", config.BucketName, -1)
-	bucketURL = strings.Replace(bucketURL, "REGIONNAME", config.Region, -1)
+	bucketURL = strings.Replace(bucketURL, "BUCKETNAME", config.Get().AWSBucketName, -1)
+	bucketURL = strings.Replace(bucketURL, "REGIONNAME", config.Get().AWSRegion, -1)
 
 	return bucketURL
 }

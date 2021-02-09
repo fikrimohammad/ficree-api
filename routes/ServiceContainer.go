@@ -1,74 +1,74 @@
 package routes
 
-import (
-	"sync"
+// import (
+// 	"sync"
 
-	"github.com/fikrimohammad/ficree-api/app/controllers"
-	"github.com/fikrimohammad/ficree-api/app/repositories"
-	"github.com/fikrimohammad/ficree-api/app/services"
-	"github.com/fikrimohammad/ficree-api/infrastructures/database"
-)
+// 	"github.com/fikrimohammad/ficree-api/app/controllers"
+// 	"github.com/fikrimohammad/ficree-api/app/repositories"
+// 	"github.com/fikrimohammad/ficree-api/app/services"
+// 	"github.com/fikrimohammad/ficree-api/infrastructures/database"
+// )
 
-// IServiceContainer represents ServiceContainer
-type IServiceContainer interface {
-	InjectUsersController() controllers.UsersController
-	InjectSkillsController() controllers.SkillsController
-	InjectExperiencesController() controllers.ExperiencesController
-	InjectEducationsController() controllers.EducationsController
-	InjectUploadsController() controllers.UploadsController
-}
+// // IServiceContainer represents ServiceContainer
+// type IServiceContainer interface {
+// 	InjectUsersController() controllers.UsersController
+// 	InjectSkillsController() controllers.SkillsController
+// 	InjectExperiencesController() controllers.ExperiencesController
+// 	InjectEducationsController() controllers.EducationsController
+// 	InjectUploadsController() controllers.UploadsController
+// }
 
-type kernel struct{}
+// type kernel struct{}
 
-func (k *kernel) InjectUsersController() controllers.UsersController {
-	dbConn := database.Instance()
-	repo := repositories.NewUserRepository(dbConn)
-	svc := services.NewUserService(repo)
-	controller := controllers.NewUsersController(svc)
-	return controller
-}
+// func (k *kernel) InjectUsersController() controllers.UsersController {
+// 	dbConn := database.Instance()
+// 	repo := repositories.NewUserRepository(dbConn)
+// 	svc := services.NewUserService(repo)
+// 	controller := controllers.NewUsersController(svc)
+// 	return controller
+// }
 
-func (k *kernel) InjectSkillsController() controllers.SkillsController {
-	dbConn := database.Instance()
-	repo := repositories.NewSkillRepository(dbConn)
-	svc := services.NewSkillService(repo)
-	controller := controllers.NewSkillsController(svc)
-	return controller
-}
+// func (k *kernel) InjectSkillsController() controllers.SkillsController {
+// 	dbConn := database.Instance()
+// 	repo := repositories.NewSkillRepository(dbConn)
+// 	svc := services.NewSkillService(repo)
+// 	controller := controllers.NewSkillsController(svc)
+// 	return controller
+// }
 
-func (k *kernel) InjectExperiencesController() controllers.ExperiencesController {
-	dbConn := database.Instance()
-	repo := repositories.NewExperienceRepository(dbConn)
-	svc := services.NewExperienceService(repo)
-	controller := controllers.NewExperiencesController(svc)
-	return controller
-}
+// func (k *kernel) InjectExperiencesController() controllers.ExperiencesController {
+// 	dbConn := database.Instance()
+// 	repo := repositories.NewExperienceRepository(dbConn)
+// 	svc := services.NewExperienceService(repo)
+// 	controller := controllers.NewExperiencesController(svc)
+// 	return controller
+// }
 
-func (k *kernel) InjectEducationsController() controllers.EducationsController {
-	dbConn := database.Instance()
-	repo := repositories.NewEducationRepository(dbConn)
-	svc := services.NewEducationService(repo)
-	controller := controllers.NewEducationsController(svc)
-	return controller
-}
+// func (k *kernel) InjectEducationsController() controllers.EducationsController {
+// 	dbConn := database.Instance()
+// 	repo := repositories.NewEducationRepository(dbConn)
+// 	svc := services.NewEducationService(repo)
+// 	controller := controllers.NewEducationsController(svc)
+// 	return controller
+// }
 
-func (k *kernel) InjectUploadsController() controllers.UploadsController {
-	svc := services.NewUploadService()
-	controller := controllers.NewUploadsController(svc)
-	return controller
-}
+// func (k *kernel) InjectUploadsController() controllers.UploadsController {
+// 	svc := services.NewUploadService()
+// 	controller := controllers.NewUploadsController(svc)
+// 	return controller
+// }
 
-var (
-	k             *kernel
-	containerOnce sync.Once
-)
+// var (
+// 	k             *kernel
+// 	containerOnce sync.Once
+// )
 
-// ServiceContainer is a function to inject dependency
-func ServiceContainer() IServiceContainer {
-	if k == nil {
-		containerOnce.Do(func() {
-			k = &kernel{}
-		})
-	}
-	return k
-}
+// // ServiceContainer is a function to inject dependency
+// func ServiceContainer() IServiceContainer {
+// 	if k == nil {
+// 		containerOnce.Do(func() {
+// 			k = &kernel{}
+// 		})
+// 	}
+// 	return k
+// }

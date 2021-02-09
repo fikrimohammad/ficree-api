@@ -6,7 +6,6 @@ import (
 	"github.com/fikrimohammad/ficree-api/config"
 	"github.com/fikrimohammad/ficree-api/infrastructures/database"
 	"github.com/fikrimohammad/ficree-api/infrastructures/storage"
-	"github.com/fikrimohammad/ficree-api/routes"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -33,15 +32,14 @@ func main() {
 	app.Use(cors.New())
 	app.Use(recover.New())
 
-	config.LoadAppEnv()
+	config.Load()
 
 	database.Connect()
-	database.Migrate()
 
-	storage.Init()
+	storage.InitAWSInstance()
 
-	router := routes.AppRouter()
-	router.RegisterAPI(app)
+	// router := routes.AppRouter()
+	// router.RegisterAPI(app)
 
 	log.Fatal(app.Listen(":3000"))
 }
