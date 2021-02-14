@@ -5,7 +5,7 @@ jobs:
       - image: circleci/golang:1.14
       - image: circleci/postgres:10.0-alpine
         environment:
-          POSTGRES_USER: ficree
+          POSTGRES_USER: postgres
           POSTGRES_DB: ficree_test
 
     environment:
