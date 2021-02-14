@@ -7,7 +7,6 @@ jobs:
         environment:
           POSTGRES_USER: ficree
           POSTGRES_DB: ficree_test
-          POSTGRES_PASSWORD: Password01
 
     environment:
       TEST_RESULTS: /tmp/test-results
