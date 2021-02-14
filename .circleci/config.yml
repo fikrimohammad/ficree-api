@@ -19,8 +19,8 @@ jobs:
       - run:
           name: Setup Test Dependency
           command: |
-            go get github.com/mattes/migrate
-            go get github.com/jstemmer/go-junit-report
+            curl -L https://github.com/golang-migrate/migrate/releases/download/v4.12.2/migrate.linux-amd64.tar.gz | tar xvz
+            mv migrate.linux-amd64 /usr/local/bin/migrate
 
       - restore_cache:
           keys:
@@ -32,7 +32,7 @@ jobs:
 
       - run:
           name: Migrate Test DB
-          command: migrate -database "postgres://$(TEST_DB_USER):${TEST_DB_PASSWORD}@$(TEST_DB_HOST)/$(TEST_DB_NAME)?sslmode=disable" -lock-timeout 30 -path db/migrations up
+          command: migrate -database "postgres://${TEST_DB_USER}:${TEST_DB_PASSWORD}@${TEST_DB_HOST}/${TEST_DB_NAME}?sslmode=disable" -lock-timeout 30 -path db/migrations up
 
       - run:
           name: Run unit tests
