@@ -31,16 +31,13 @@ jobs:
 
       - run:
           name: Migrate DB for test
-          command: ./migrate -database "postgres://${TEST_DB_USER}@${TEST_DB_HOST}/${TEST_DB_NAME}?sslmode=disable" \
-                             -lock-timeout 30 \
-                             -path db/migrations up
+          command: ./migrate -database "postgres://${TEST_DB_USER}@${TEST_DB_HOST}/${TEST_DB_NAME}?sslmode=disable" -lock-timeout 30 -path db/migrations up
 
       - run:
           name: Run unit tests
           command: |
             PACKAGE_NAMES=$(go list ./... | circleci tests split --split-by=timings --timings-type=classname)
-            gotestsum --junitfile ${TEST_RESULTS}/gotestsum-report.xml \
-                      -- -race -coverprofile=coverage.out -covermode=atomic $PACKAGE_NAMES
+            gotestsum --junitfile ${TEST_RESULTS}/gotestsum-report.xml -- -race -coverprofile=coverage.out -covermode=atomic $PACKAGE_NAMES
 
       - run:
           name: Upload coverage to Codecov
