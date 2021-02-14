@@ -37,7 +37,8 @@ jobs:
           name: Run unit tests
           command: |
             PACKAGE_NAMES=$(go list ./... | circleci tests split --split-by=timings --timings-type=classname)
-            gotestsum --junitfile ${TEST_RESULTS}/gotestsum-report.xml -- -race -coverprofile=coverage.out -covermode=atomic $PACKAGE_NAMES
+            CVPKG=$(go list ./... | grep -v mocks | tr '\n' ',' | sed 's/,$$//')
+            gotestsum --junitfile ${TEST_RESULTS}/gotestsum-report.xml -- -race -coverprofile=coverage.out -coverpkg=${CVPKG} $PACKAGE_NAMES
 
       - run:
           name: Upload coverage to Codecov
