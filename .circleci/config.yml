@@ -16,7 +16,7 @@ jobs:
       - run: mkdir -p $TEST_RESULTS
 
       - run:
-          name: Setup Test Dependency
+          name: Setup dependencies
           command: |
             curl -L https://github.com/golang-migrate/migrate/releases/download/v4.12.2/migrate.linux-amd64.tar.gz | tar xvz
             mv migrate.linux-amd64 migrate
@@ -30,7 +30,7 @@ jobs:
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
 
       - run:
-          name: Migrate Test DB
+          name: Migrate DB for test
           command: ./migrate -database "postgres://${TEST_DB_USER}@${TEST_DB_HOST}/${TEST_DB_NAME}?sslmode=disable" -lock-timeout 30 -path db/migrations up
 
       - run:
