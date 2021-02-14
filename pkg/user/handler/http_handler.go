@@ -16,8 +16,8 @@ type UserHTTPHandler struct {
 }
 
 // NewUserHTTPHandler is a function to initialize UserHTTPHandler instance
-func NewUserHTTPHandler(svc domain.UserService) *UserHTTPHandler {
-	return &UserHTTPHandler{SVC: svc}
+func NewUserHTTPHandler(svc domain.UserService) UserHTTPHandler {
+	return UserHTTPHandler{SVC: svc}
 }
 
 // HandleListUsers is a handler to list users by supported query parameters
@@ -26,12 +26,12 @@ func (handler *UserHTTPHandler) HandleListUsers(ctx *fiber.Ctx) error {
 	queryString := ctx.Context().QueryArgs().QueryString()
 	err := json.Unmarshal(queryString, &queryParams)
 	if err != nil {
-		return apiresponse.RenderJSONError(ctx, http.StatusUnprocessableEntity, err)
+		return apiresponse.RenderJSONError(ctx, err)
 	}
 
 	results, err := handler.SVC.All(queryParams)
 	if err != nil {
-		return apiresponse.RenderJSONError(ctx, http.StatusBadRequest, err)
+		return apiresponse.RenderJSONError(ctx, err)
 	}
 
 	return apiresponse.RenderJSONSuccess(ctx, http.StatusOK, results)
@@ -41,12 +41,12 @@ func (handler *UserHTTPHandler) HandleListUsers(ctx *fiber.Ctx) error {
 func (handler *UserHTTPHandler) HandleShowUser(ctx *fiber.Ctx) error {
 	userID, err := strconv.Atoi(ctx.Params("id"))
 	if err != nil {
-		return apiresponse.RenderJSONError(ctx, http.StatusBadRequest, err)
+		return apiresponse.RenderJSONError(ctx, err)
 	}
 
 	result, err := handler.SVC.Show(userID)
 	if err != nil {
-		return apiresponse.RenderJSONError(ctx, http.StatusNotFound, err)
+		return apiresponse.RenderJSONError(ctx, err)
 	}
 
 	return apiresponse.RenderJSONSuccess(ctx, http.StatusOK, result)
@@ -57,12 +57,12 @@ func (handler *UserHTTPHandler) HandleCreateUser(ctx *fiber.Ctx) error {
 	var params map[string]interface{}
 	err := json.Unmarshal(ctx.Body(), &params)
 	if err != nil {
-		return apiresponse.RenderJSONError(ctx, http.StatusUnprocessableEntity, err)
+		return apiresponse.RenderJSONError(ctx, err)
 	}
 
 	user, err := handler.SVC.Create(params)
 	if err != nil {
-		return apiresponse.RenderJSONError(ctx, http.StatusUnprocessableEntity, err)
+		return apiresponse.RenderJSONError(ctx, err)
 	}
 
 	return apiresponse.RenderJSONSuccess(ctx, http.StatusCreated, user)
@@ -72,18 +72,18 @@ func (handler *UserHTTPHandler) HandleCreateUser(ctx *fiber.Ctx) error {
 func (handler *UserHTTPHandler) HandleUpdateUser(ctx *fiber.Ctx) error {
 	userID, err := strconv.Atoi(ctx.Params("id"))
 	if err != nil {
-		return apiresponse.RenderJSONError(ctx, http.StatusBadRequest, err)
+		return apiresponse.RenderJSONError(ctx, err)
 	}
 
 	var params map[string]interface{}
 	err = json.Unmarshal(ctx.Body(), &params)
 	if err != nil {
-		return apiresponse.RenderJSONError(ctx, http.StatusUnprocessableEntity, err)
+		return apiresponse.RenderJSONError(ctx, err)
 	}
 
 	user, err := handler.SVC.Update(userID, params)
 	if err != nil {
-		return apiresponse.RenderJSONError(ctx, http.StatusUnprocessableEntity, err)
+		return apiresponse.RenderJSONError(ctx, err)
 	}
 
 	return apiresponse.RenderJSONSuccess(ctx, http.StatusOK, user)
@@ -93,12 +93,12 @@ func (handler *UserHTTPHandler) HandleUpdateUser(ctx *fiber.Ctx) error {
 func (handler *UserHTTPHandler) HandleDestroyUser(ctx *fiber.Ctx) error {
 	userID, err := strconv.Atoi(ctx.Params("id"))
 	if err != nil {
-		return apiresponse.RenderJSONError(ctx, http.StatusBadRequest, err)
+		return apiresponse.RenderJSONError(ctx, err)
 	}
 
 	user, err := handler.SVC.Destroy(userID)
 	if err != nil {
-		return apiresponse.RenderJSONError(ctx, http.StatusNotFound, err)
+		return apiresponse.RenderJSONError(ctx, err)
 	}
 
 	return apiresponse.RenderJSONSuccess(ctx, http.StatusOK, user)

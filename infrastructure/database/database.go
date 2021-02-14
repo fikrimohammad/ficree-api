@@ -9,12 +9,18 @@ import (
 
 var db *pg.DB
 
-// Get is a function to fetch database connection
-func Get() *pg.DB {
+// Load is a function to load database connection
+func Load() *pg.DB {
 	if db == nil {
 		Connect()
 	}
 	return db
+}
+
+// Close is a function to close database connection
+func Close() {
+	db.Close()
+	db = nil
 }
 
 // Connect is a function to connect to a database

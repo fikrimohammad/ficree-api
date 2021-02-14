@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/fikrimohammad/ficree-api/domain"
-	"github.com/fikrimohammad/ficree-api/infrastructures/database"
+	"github.com/fikrimohammad/ficree-api/infrastructure/database"
 	"github.com/go-pg/pg/v10"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/suite"
@@ -17,7 +17,7 @@ type UserSQLRepositorySuite struct {
 }
 
 func (suite *UserSQLRepositorySuite) SetupSuite() {
-	suite.db = database.Get()
+	suite.db = database.Load()
 	suite.repo = NewSQLUserRepository(suite.db)
 }
 

@@ -6,12 +6,6 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-// User output type ...
-const (
-	UserCompactOutputType = "compact"
-	UserDetailOutputType  = "detail"
-)
-
 // UserCompactOutput represents compact form of user output
 type UserCompactOutput struct {
 	ID             int    `mapstructure:"id"`

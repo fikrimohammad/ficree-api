@@ -50,3 +50,9 @@ const (
 	UpdateUserError   = "failed to update user: %v"
 	DeleteUserError   = "failed to delete user: %v"
 )
+
+// User output type ...
+const (
+	UserCompactOutputType = "compact"
+	UserDetailOutputType  = "detail"
+)

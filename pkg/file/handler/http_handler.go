@@ -9,23 +9,28 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// FileHTTPHandler .....
+// FileHTTPHandler ...
 type FileHTTPHandler struct {
 	SVC domain.FileService
 }
 
-// HandleCreatePresignedURL ......
+// NewFileHTTPHandler ...
+func NewFileHTTPHandler(svc domain.FileService) FileHTTPHandler {
+	return FileHTTPHandler{SVC: svc}
+}
+
+// HandleCreatePresignedURL ...
 func (handler *FileHTTPHandler) HandleCreatePresignedURL(ctx *fiber.Ctx) error {
 	var queryParams map[string]interface{}
 	queryString := ctx.Context().QueryArgs().QueryString()
 	err := json.Unmarshal(queryString, &queryParams)
 	if err != nil {
-		return apiresponse.RenderJSONError(ctx, http.StatusUnprocessableEntity, err)
+		return apiresponse.RenderJSONError(ctx, err)
 	}
 
 	result, err := handler.SVC.BuildPresignedURL(queryParams)
 	if err != nil {
-		return apiresponse.RenderJSONError(ctx, http.StatusBadRequest, err)
+		return apiresponse.RenderJSONError(ctx, err)
 	}
 
 	return apiresponse.RenderJSONSuccess(ctx, http.StatusOK, result)

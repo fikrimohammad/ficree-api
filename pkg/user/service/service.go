@@ -28,7 +28,7 @@ func (svc *UserService) All(params map[string]interface{}) ([]map[string]interfa
 		return nil, err
 	}
 
-	results, err := output.NewUserArrayOutput(users, output.UserCompactOutputType)
+	results, err := output.NewUserArrayOutput(users, domain.UserCompactOutputType)
 	return results, err
 }
 
@@ -39,7 +39,7 @@ func (svc *UserService) Show(id int) (map[string]interface{}, error) {
 		return nil, err
 	}
 
-	result, err := output.NewUserOutput(user, output.UserDetailOutputType)
+	result, err := output.NewUserOutput(user, domain.UserDetailOutputType)
 	return result, err
 }
 
@@ -60,7 +60,7 @@ func (svc *UserService) Create(params map[string]interface{}) (map[string]interf
 		return nil, err
 	}
 
-	userOut, err := output.NewUserOutput(user, output.UserCompactOutputType)
+	userOut, err := output.NewUserOutput(user, domain.UserCompactOutputType)
 	return userOut, err
 }
 
@@ -81,7 +81,7 @@ func (svc *UserService) Update(id int, params map[string]interface{}) (map[strin
 		return nil, err
 	}
 
-	userOut, err := output.NewUserOutput(user, output.UserDetailOutputType)
+	userOut, err := output.NewUserOutput(user, domain.UserCompactOutputType)
 	return userOut, err
 }
 
@@ -92,6 +92,6 @@ func (svc *UserService) Destroy(id int) (map[string]interface{}, error) {
 		return nil, err
 	}
 
-	userOut, err := output.NewUserOutput(user, output.UserCompactOutputType)
+	userOut, err := output.NewUserOutput(user, domain.UserCompactOutputType)
 	return userOut, err
 }

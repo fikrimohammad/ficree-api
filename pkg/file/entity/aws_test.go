@@ -3,7 +3,7 @@ package entity
 import (
 	"testing"
 
-	"github.com/fikrimohammad/ficree-api/infrastructures/storage"
+	"github.com/fikrimohammad/ficree-api/infrastructure/storage"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -46,11 +46,9 @@ func TestNewAWSFile(t *testing.T) {
 			case "aws-stored":
 				assert.NoError(t, err)
 				assert.IsType(t, &AWSStoredFile{}, result)
-				break
 			case "unstored":
 				assert.NoError(t, err)
 				assert.IsType(t, &AWSUnStoredFile{}, result)
-				break
 			default:
 				assert.Error(t, err)
 				assert.Nil(t, result)

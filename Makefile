@@ -44,5 +44,8 @@ testdb.rollback:
 	migrate -database "postgres://$(TEST_DB_USER):${TEST_DB_PASSWORD}@$(TEST_DB_HOST)/$(TEST_DB_NAME)?sslmode=disable" -lock-timeout 30 -path db/migrations down
 
 test-full: testdb.drop testdb.create testdb.migrate
-	APP_ENV=test go test -p 1 -count=1 -cover -coverpkg=$(CVPKG) -coverprofile=coverage.out $(ALL_PACKAGES)
-	go tool cover -html=coverage.out
+	@APP_ENV=test go test -p 1 -count=1 -cover -coverpkg=$(CVPKG) -coverprofile=coverage.out $(ALL_PACKAGES)
+	@go tool cover -html=coverage.out
+
+run-watch:
+	reflex -r "\.go" -s -- sh -c "go run main.go"

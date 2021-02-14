@@ -1,22 +1,25 @@
 package apierror
 
-import "errors"
+import (
+	"errors"
+	"net/http"
+)
 
-// Error .....
-type Error struct {
+// APIError .....
+type APIError struct {
 	Code    int
 	Message string
 	GoErr   error
 }
 
 // Error ......
-func (e *Error) Error() string {
+func (e *APIError) Error() string {
 	return e.Message
 }
 
 // New ......
 func New(code int, message string) error {
-	return &Error{
+	return &APIError{
 		Code:    code,
 		Message: message,
 		GoErr:   errors.New(message),
@@ -25,9 +28,18 @@ func New(code int, message string) error {
 
 // FromError ...
 func FromError(code int, err error) error {
-	return &Error{
+	return &APIError{
 		Code:    code,
 		Message: err.Error(),
 		GoErr:   err,
 	}
+}
+
+// GetHTTPStatus ...
+func GetHTTPStatus(err error) int {
+	e, ok := err.(*APIError)
+	if ok {
+		return e.Code
+	}
+	return http.StatusInternalServerError
 }

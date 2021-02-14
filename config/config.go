@@ -44,7 +44,8 @@ func Load() {
 
 	err := provider.ReadInConfig()
 	if err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+		_, ok := err.(viper.ConfigFileNotFoundError)
+		if ok {
 			// Do nothing because we already set the default value
 		} else {
 			panic(err)
