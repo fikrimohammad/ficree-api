@@ -3,13 +3,7 @@ jobs:
   test:
     docker:
       - image: circleci/golang:1.14
-        auth:
-          username: $DOCKERHUB_ID
-          password: $DOCKERHUB_PASSWORD
       - image: circleci/postgres:10.0-alpine
-        auth:
-          username: $DOCKERHUB_ID
-          password: $DOCKERHUB_PASSWORD
         environment:
           POSTGRES_USER: $TEST_DB_USER
           POSTGRES_DB: $TEST_DB_NAME
