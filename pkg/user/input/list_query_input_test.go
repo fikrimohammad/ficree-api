@@ -6,18 +6,18 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestUserListInput_Validate(t *testing.T) {
+func TestUserListInput_AsQueryParams(t *testing.T) {
 	tests := []struct {
-		Input       UserListInput
+		Input       map[string]interface{}
 		Expectation map[string]interface{}
 	}{
 		{
-			Input: UserListInput{
-				Limit:         1,
-				Offset:        1,
-				SortColumn:    "name",
-				SortDirection: "asc",
-				SearchString:  "Soft",
+			Input: map[string]interface{}{
+				"search_string":  "Soft",
+				"limit":          1,
+				"offset":         1,
+				"sort_column":    "name",
+				"sort_direction": "asc",
 			},
 			Expectation: map[string]interface{}{
 				"searchString":  "Soft",
@@ -30,7 +30,10 @@ func TestUserListInput_Validate(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		result := test.Input.AsQueryParams()
+		input, err := NewUserListInput(test.Input)
+		assert.NoError(t, err)
+
+		result := input.AsQueryParams()
 		for key, expectedValue := range test.Expectation {
 			assert.Equal(t, expectedValue, result[key])
 		}

@@ -4,7 +4,7 @@ import "github.com/mitchellh/mapstructure"
 
 // UserListInput represents supported query params for filtering users
 type UserListInput struct {
-	SearchString  string `mapstructure:"search,omitempty"`
+	SearchString  string `mapstructure:"search_string,omitempty"`
 	Limit         int    `mapstructure:"limit,omitempty"`
 	Offset        int    `mapstructure:"offset,omitempty"`
 	SortColumn    string `mapstructure:"sort_column,omitempty"`
