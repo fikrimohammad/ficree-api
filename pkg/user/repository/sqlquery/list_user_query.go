@@ -4,14 +4,21 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/fikrimohammad/ficree-api/domain"
 	"github.com/go-pg/pg/v10/orm"
 )
 
 // ListUserQuery represents query for listing users
 type ListUserQuery struct {
 	scope   *orm.Query
-	options map[string]interface{}
+	options domain.UserListInput
 }
+
+const (
+	defaultLimit         = 50
+	defaultSortColumn    = "id"
+	defaultSortDirection = "desc"
+)
 
 // NewListUserQuery is a function to initialize ListUserQuery instance
 func NewListUserQuery(scope *orm.Query) *ListUserQuery {
@@ -19,7 +26,7 @@ func NewListUserQuery(scope *orm.Query) *ListUserQuery {
 }
 
 // Filter is a function to filter users by given query parameters
-func (q *ListUserQuery) Filter(options map[string]interface{}) *orm.Query {
+func (q *ListUserQuery) Filter(options domain.UserListInput) *orm.Query {
 	q.options = options
 	q.applySorter()
 	q.filterBySearchString()
@@ -30,7 +37,7 @@ func (q *ListUserQuery) Filter(options map[string]interface{}) *orm.Query {
 
 // FilterBySearchString is a function to filter users by search string
 func (q *ListUserQuery) filterBySearchString() {
-	searchString := fmt.Sprintf("%v", q.options["searchString"])
+	searchString := fmt.Sprintf("%v", q.options.SearchString)
 	if searchString == "" || searchString == "<nil>" {
 		return
 	}
@@ -43,28 +50,20 @@ func (q *ListUserQuery) filterBySearchString() {
 }
 
 func (q *ListUserQuery) filterByLimit() {
-	if q.options["limit"] == nil {
-		q.scope = q.scope.Limit(q.defaultLimit())
-		return
+	limit := q.options.Limit
+	if limit == 0 {
+		limit = defaultLimit
 	}
 
-	limit := q.options["limit"].(int)
-	if limit < 1 {
-		q.scope = q.scope.Limit(q.defaultLimit())
-		return
-	}
 	q.scope = q.scope.Limit(limit)
 }
 
 func (q *ListUserQuery) filterByOffset() {
-	if q.options["offset"] == nil {
+	offset := q.options.Offset
+	if q.options.Offset == 0 {
 		return
 	}
 
-	offset := q.options["offset"].(int)
-	if offset < 1 {
-		return
-	}
 	q.scope = q.scope.Offset(offset)
 }
 
@@ -72,24 +71,16 @@ func (q *ListUserQuery) applySorter() {
 	var sortColumn string
 	var sortDirection string
 
-	sortColumn = fmt.Sprintf("%v", q.options["sortColumn"])
-	if sortColumn == "" || sortColumn == "<nil>" {
-		sortColumn = "id"
+	sortColumn = q.options.SortColumn
+	if sortColumn == "" {
+		sortColumn = defaultSortColumn
 	}
 
-	sortDirection = fmt.Sprintf("%v", q.options["sortDirection"])
-	if sortDirection == "" || sortDirection == "<nil>" {
-		sortDirection = "desc"
+	sortDirection = q.options.SortDirection
+	if sortDirection == "" {
+		sortDirection = defaultSortDirection
 	}
 
 	sorter := fmt.Sprintf("%v %v NULLS LAST", sortColumn, strings.ToUpper(sortDirection))
 	q.scope = q.scope.Order(sorter)
-
-	if sortColumn != "id" {
-		q.scope = q.scope.Order("id DESC NULLS LAST")
-	}
-}
-
-func (q *ListUserQuery) defaultLimit() int {
-	return 50
 }

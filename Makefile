@@ -10,7 +10,7 @@ list-pkg:
 	: $(ALL_PACKAGES)
 
 gen-mocks:
-	mockery --dir=domain --all --output=domain/mock
+	mockery --dir=domain --all --output=domain/mocks
 
 gen-migration:
 	migrate create -ext sql -dir db/migrations -seq ${migration-name}

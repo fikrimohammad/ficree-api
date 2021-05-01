@@ -6,28 +6,39 @@ import (
 	"github.com/fikrimohammad/ficree-api/domain"
 	"github.com/fikrimohammad/ficree-api/infrastructure/database"
 	"github.com/go-pg/pg/v10"
+	"github.com/go-pg/pg/v10/orm"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/suite"
 )
 
 type UserSQLRepositorySuite struct {
 	suite.Suite
-	db   *pg.DB
+	conn *pg.DB
+	tx   *pg.Tx
+	db   orm.DB
 	repo domain.UserRepository
 }
 
 func (suite *UserSQLRepositorySuite) SetupSuite() {
-	suite.db = database.Load()
-	suite.repo = NewSQLUserRepository(suite.db)
+	suite.conn = database.Load()
+}
+
+func (suite *UserSQLRepositorySuite) SetupTest() {
+	tx, err := suite.conn.Begin()
+	suite.NoError(err)
+
+	suite.tx = tx
+	suite.db = tx
+	suite.repo = NewSQLUserRepository(tx)
 }
 
 func (suite *UserSQLRepositorySuite) TearDownTest() {
-	_, err := suite.db.Exec("DELETE FROM users")
+	err := suite.tx.Rollback()
 	suite.NoError(err)
 }
 
 func (suite *UserSQLRepositorySuite) TearDownSuite() {
-	suite.db.Close()
+	suite.conn.Close()
 }
 
 func TestUserSQLRepositorySuite(t *testing.T) {
@@ -57,8 +68,8 @@ func (suite *UserSQLRepositorySuite) TestUserSQLRepository_List() {
 	suite.NoError(err)
 
 	suite.Run("when filtered by search string", func() {
-		queryParams := map[string]interface{}{
-			"searchString": "Prod",
+		queryParams := domain.UserListInput{
+			SearchString: "Prod",
 		}
 
 		results, err := suite.repo.List(queryParams)
@@ -68,8 +79,8 @@ func (suite *UserSQLRepositorySuite) TestUserSQLRepository_List() {
 	})
 
 	suite.Run("when filtered by limit", func() {
-		queryParams := map[string]interface{}{
-			"limit": 1,
+		queryParams := domain.UserListInput{
+			Limit: 1,
 		}
 
 		results, err := suite.repo.List(queryParams)
@@ -79,8 +90,8 @@ func (suite *UserSQLRepositorySuite) TestUserSQLRepository_List() {
 	})
 
 	suite.Run("when filtered by limit less than 1", func() {
-		queryParams := map[string]interface{}{
-			"limit": 0,
+		queryParams := domain.UserListInput{
+			Limit: 0,
 		}
 
 		results, err := suite.repo.List(queryParams)
@@ -91,8 +102,8 @@ func (suite *UserSQLRepositorySuite) TestUserSQLRepository_List() {
 	})
 
 	suite.Run("when filtered by offset", func() {
-		queryParams := map[string]interface{}{
-			"offset": 1,
+		queryParams := domain.UserListInput{
+			Offset: 1,
 		}
 
 		results, err := suite.repo.List(queryParams)
@@ -102,8 +113,8 @@ func (suite *UserSQLRepositorySuite) TestUserSQLRepository_List() {
 	})
 
 	suite.Run("when filtered by offset less than 1", func() {
-		queryParams := map[string]interface{}{
-			"offset": 0,
+		queryParams := domain.UserListInput{
+			Offset: 0,
 		}
 
 		results, err := suite.repo.List(queryParams)
@@ -114,8 +125,8 @@ func (suite *UserSQLRepositorySuite) TestUserSQLRepository_List() {
 	})
 
 	suite.Run("when order by valid column", func() {
-		queryParams := map[string]interface{}{
-			"sortColumn": "name",
+		queryParams := domain.UserListInput{
+			SortColumn: "name",
 		}
 
 		results, err := suite.repo.List(queryParams)
@@ -125,8 +136,8 @@ func (suite *UserSQLRepositorySuite) TestUserSQLRepository_List() {
 	})
 
 	suite.Run("when order by valid direction", func() {
-		queryParams := map[string]interface{}{
-			"sortDirection": "asc",
+		queryParams := domain.UserListInput{
+			SortDirection: "asc",
 		}
 
 		results, err := suite.repo.List(queryParams)
@@ -136,8 +147,8 @@ func (suite *UserSQLRepositorySuite) TestUserSQLRepository_List() {
 	})
 
 	suite.Run("when order by invalid column", func() {
-		queryParams := map[string]interface{}{
-			"sortColumn": "invalid_column",
+		queryParams := domain.UserListInput{
+			SortColumn: "invalid_column",
 		}
 
 		results, err := suite.repo.List(queryParams)
@@ -146,8 +157,8 @@ func (suite *UserSQLRepositorySuite) TestUserSQLRepository_List() {
 	})
 
 	suite.Run("when order by invalid direction", func() {
-		queryParams := map[string]interface{}{
-			"sortDirection": "invalid_direction",
+		queryParams := domain.UserListInput{
+			SortDirection: "invalid_direction",
 		}
 
 		results, err := suite.repo.List(queryParams)
