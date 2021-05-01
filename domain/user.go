@@ -26,16 +26,16 @@ type User struct {
 
 // UserService represents usecase layer for processing users entity
 type UserService interface {
-	All(params map[string]interface{}) ([]map[string]interface{}, error)
-	Show(id int) (map[string]interface{}, error)
-	Create(params map[string]interface{}) (map[string]interface{}, error)
-	Update(id int, params map[string]interface{}) (map[string]interface{}, error)
-	Destroy(id int) (map[string]interface{}, error)
+	List(params UserListInput) ([]*UserCompactOutput, error)
+	Show(id int) (*UserDetailOutput, error)
+	Create(params UserCreateInput) (*UserDetailOutput, error)
+	Update(id int, params UserUpdateInput) (*UserDetailOutput, error)
+	Destroy(id int) (*UserDetailOutput, error)
 }
 
 // UserRepository represents database layer for processing users entity
 type UserRepository interface {
-	List(params map[string]interface{}) ([]*User, error)
+	List(params UserListInput) ([]*User, error)
 	Find(id int) (*User, error)
 	Create(params *User) (*User, error)
 	Update(id int, params *User) (*User, error)

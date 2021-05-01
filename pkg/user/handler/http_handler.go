@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -22,14 +22,13 @@ func NewUserHTTPHandler(svc domain.UserService) UserHTTPHandler {
 
 // HandleListUsers is a handler to list users by supported query parameters
 func (handler *UserHTTPHandler) HandleListUsers(ctx *fiber.Ctx) error {
-	var queryParams map[string]interface{}
-	queryString := ctx.Context().QueryArgs().QueryString()
-	err := json.Unmarshal(queryString, &queryParams)
+	var queryParams domain.UserListInput
+	err := ctx.QueryParser(&queryParams)
 	if err != nil {
 		return apiresponse.RenderJSONError(ctx, err)
 	}
 
-	results, err := handler.SVC.All(queryParams)
+	results, err := handler.SVC.List(queryParams)
 	if err != nil {
 		return apiresponse.RenderJSONError(ctx, err)
 	}
@@ -54,9 +53,10 @@ func (handler *UserHTTPHandler) HandleShowUser(ctx *fiber.Ctx) error {
 
 // HandleCreateUser is an API to create an user
 func (handler *UserHTTPHandler) HandleCreateUser(ctx *fiber.Ctx) error {
-	var params map[string]interface{}
-	err := json.Unmarshal(ctx.Body(), &params)
+	var params domain.UserCreateInput
+	err := ctx.BodyParser(&params)
 	if err != nil {
+		fmt.Println(err.Error())
 		return apiresponse.RenderJSONError(ctx, err)
 	}
 
@@ -75,8 +75,8 @@ func (handler *UserHTTPHandler) HandleUpdateUser(ctx *fiber.Ctx) error {
 		return apiresponse.RenderJSONError(ctx, err)
 	}
 
-	var params map[string]interface{}
-	err = json.Unmarshal(ctx.Body(), &params)
+	var params domain.UserUpdateInput
+	err = ctx.BodyParser(&params)
 	if err != nil {
 		return apiresponse.RenderJSONError(ctx, err)
 	}

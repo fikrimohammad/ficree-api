@@ -2,13 +2,15 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	"math/rand"
+	"net/http"
 	"testing"
 
 	"github.com/bxcodec/faker/v3"
+	"github.com/fikrimohammad/ficree-api/common/apierror"
 	"github.com/fikrimohammad/ficree-api/domain"
 	"github.com/fikrimohammad/ficree-api/domain/mocks"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -23,10 +25,6 @@ func (suite *UserServiceSuite) SetupSuite() {
 	suite.svc = NewUserService(suite.repo)
 }
 
-func (suite *UserServiceSuite) SetupTest() {
-	suite.repo.Mock = mock.Mock{}
-}
-
 func TestUserServiceSuite(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skip test for UserServiceSuite")
@@ -39,47 +37,38 @@ func (suite *UserServiceSuite) TestUserService_All() {
 	err := faker.FakeData(user)
 	suite.NoError(err)
 
-	suite.Run("when query params are valid", func() {
-		queryParams := map[string]interface{}{
-			"sort_column":    "name",
-			"sort_direction": "desc",
-			"search":         user.Title,
-			"offset":         nil,
-			"limit":          nil,
+	suite.Run("when successfully fetch all users", func() {
+		queryParams := domain.UserListInput{
+			SortColumn:    "name",
+			SortDirection: "desc",
+			SearchString:  user.Title,
+			Offset:        0,
+			Limit:         0,
 		}
 
 		users := []*domain.User{user}
-		suite.repo.On("List", mock.Anything).Return(users, nil)
+		suite.repo.On("List", queryParams).Return(users, nil).Once()
 
-		results, err := suite.svc.All(queryParams)
+		results, err := suite.svc.List(queryParams)
 		suite.NoError(err)
-		suite.NotEmpty(results)
-	})
-
-	suite.Run("when query params are invalid", func() {
-		queryParams := map[string]interface{}{
-			"sort_column":    10101,
-			"sort_direction": 11000,
-			"search":         user.Title,
-			"offset":         "asasada",
-			"limit":          "asasds",
-		}
-
-		results, err := suite.svc.All(queryParams)
-		suite.Error(err)
-		suite.Empty(results)
+		suite.IsType([]*domain.UserCompactOutput{}, results)
+		suite.Equal(len(users), len(results))
 	})
 
 	suite.Run("when there are error when fetching users on DB", func() {
-		queryParams := map[string]interface{}{
-			"search": user.Title,
+		queryParams := domain.UserListInput{
+			SortColumn:    "invalid column",
+			SortDirection: "invalid direction",
+			SearchString:  user.Title,
+			Offset:        0,
+			Limit:         0,
 		}
 
-		suite.repo.Mock = mock.Mock{}
-		suite.repo.On("List", mock.Anything).Return(nil, errors.New("dummy error"))
+		dummyErr := errors.New("dummy error")
+		suite.repo.On("List", queryParams).Return(nil, dummyErr).Once()
 
-		results, err := suite.svc.All(queryParams)
-		suite.Error(err)
+		results, err := suite.svc.List(queryParams)
+		suite.EqualError(err, dummyErr.Error())
 		suite.Empty(results)
 	})
 }
@@ -90,7 +79,7 @@ func (suite *UserServiceSuite) TestUserService_Show() {
 	suite.NoError(err)
 
 	suite.Run("when user with given id exists", func() {
-		suite.repo.On("Find", user.ID).Return(user, nil)
+		suite.repo.On("Find", user.ID).Return(user, nil).Once()
 
 		result, err := suite.svc.Show(user.ID)
 		suite.NoError(err)
@@ -99,10 +88,11 @@ func (suite *UserServiceSuite) TestUserService_Show() {
 
 	suite.Run("when there are error when find user by ID on DB", func() {
 		dummyID := rand.Int()
-		suite.repo.On("Find", dummyID).Return(nil, errors.New("Not Found"))
+		dummyErr := apierror.New(http.StatusNotFound, fmt.Sprintf(domain.FindUserByIDError, dummyID))
+		suite.repo.On("Find", dummyID).Return(nil, dummyErr).Once()
 
 		result, err := suite.svc.Show(dummyID)
-		suite.Error(err)
+		suite.EqualError(err, dummyErr.Error())
 		suite.Nil(result)
 	})
 }
@@ -111,55 +101,40 @@ func (suite *UserServiceSuite) TestUserService_Create() {
 	user := &domain.User{}
 	_ = faker.FakeData(user)
 
-	suite.Run("when inputs are valid", func() {
-		inputs := map[string]interface{}{
-			"name":         "Ficree",
-			"phone_number": "62711717171",
-			"email":        "ficree@gmail.com",
+	suite.Run("when successfully create a user", func() {
+		input := domain.UserCreateInput{
+			Name:        "Ficree",
+			PhoneNumber: "6285894298777",
+			Email:       faker.Email(),
 		}
 
-		suite.repo.On("Create", mock.Anything).Return(user, nil)
+		suite.repo.On("Create", input.AsUser()).Return(user, nil).Once()
 
-		result, err := suite.svc.Create(inputs)
+		result, err := suite.svc.Create(input)
 		suite.NoError(err)
 		suite.NotNil(result)
-
-		suite.repo.Mock = mock.Mock{}
 	})
 
 	suite.Run("when there are errors when storing user on DB", func() {
-		inputs := map[string]interface{}{
-			"name":         "Dummy",
-			"phone_number": "6281111111",
-			"email":        "dummy@gmail.com",
+		input := domain.UserCreateInput{
+			Name:        "Ficree",
+			PhoneNumber: "6285894298777",
+			Email:       faker.Email(),
 		}
 
-		suite.repo.On("Create", mock.Anything).Return(nil, errors.New("dummy error"))
+		dummyErr := apierror.New(http.StatusUnprocessableEntity, domain.CreateUserError)
+		suite.repo.On("Create", input.AsUser()).Return(nil, dummyErr).Once()
 
-		result, err := suite.svc.Create(inputs)
-		suite.Error(err)
-		suite.Nil(result)
-
-		suite.repo.Mock = mock.Mock{}
-	})
-
-	suite.Run("when inputs' type are invalid", func() {
-		inputs := map[string]interface{}{
-			"name":         21321231,
-			"phone_number": "62711717171",
-			"email":        "ficree@gmail.com",
-		}
-
-		result, err := suite.svc.Create(inputs)
-		suite.Error(err)
+		result, err := suite.svc.Create(input)
+		suite.EqualError(err, dummyErr.Error())
 		suite.Nil(result)
 	})
 
-	suite.Run("when inputs' values are invalid", func() {
-		inputs := map[string]interface{}{
-			"name":         nil,
-			"phone_number": "63y6798789",
-			"email":        "ficree@gmail.com",
+	suite.Run("when input is invalid", func() {
+		inputs := domain.UserCreateInput{
+			Name:        "",
+			PhoneNumber: "63y6798789",
+			Email:       "ficree@gmail.com",
 		}
 
 		result, err := suite.svc.Create(inputs)
@@ -173,52 +148,41 @@ func (suite *UserServiceSuite) TestUserService_Update() {
 	_ = faker.FakeData(user)
 	dummyID := rand.Int()
 
-	suite.Run("when inputs are valid", func() {
-		inputs := map[string]interface{}{
-			"name":         "Ficree",
-			"phone_number": "62711717171",
-			"email":        "ficree@gmail.com",
+	suite.Run("when successfully update a user", func() {
+		input := domain.UserUpdateInput{
+			Name:        "Ficree",
+			PhoneNumber: "628581234567",
+			Email:       faker.Email(),
 		}
 
-		suite.repo.On("Update", user.ID, mock.Anything).Return(user, nil)
+		suite.repo.On("Update", user.ID, input.AsUser()).Return(user, nil).Once()
 
-		result, err := suite.svc.Update(user.ID, inputs)
+		result, err := suite.svc.Update(user.ID, input)
 		suite.NoError(err)
 		suite.NotNil(result)
 	})
 
 	suite.Run("when there are errors when storing user on DB", func() {
-		inputs := map[string]interface{}{
-			"name":         "Dummy",
-			"phone_number": "6281111111",
-			"email":        "dummy@gmail.com",
+		input := domain.UserUpdateInput{
+			Name:        "Ficree",
+			PhoneNumber: "628581234567",
+			Email:       faker.Email(),
 		}
 
-		suite.repo.On("Update", dummyID, mock.Anything).Return(nil, errors.New("dummy error"))
+		dummyErr := apierror.New(http.StatusUnprocessableEntity, domain.UpdateUserError)
+		suite.repo.On("Update", dummyID, input.AsUser()).Return(nil, dummyErr).Once()
 
-		result, err := suite.svc.Update(dummyID, inputs)
-		suite.Error(err)
+		result, err := suite.svc.Update(dummyID, input)
+		suite.EqualError(err, dummyErr.Error())
 		suite.Nil(result)
 	})
 
-	suite.Run("when inputs' type are invalid", func() {
-		inputs := map[string]interface{}{
-			"name":         21321231,
-			"phone_number": "62711717171",
-			"email":        "ficree@gmail.com",
+	suite.Run("when input is invalid", func() {
+		input := domain.UserUpdateInput{
+			PhoneNumber: "+68986899",
 		}
 
-		result, err := suite.svc.Update(user.ID, inputs)
-		suite.Error(err)
-		suite.Nil(result)
-	})
-
-	suite.Run("when inputs' values are invalid", func() {
-		inputs := map[string]interface{}{
-			"email": "not_an_email",
-		}
-
-		result, err := suite.svc.Update(user.ID, inputs)
+		result, err := suite.svc.Update(user.ID, input)
 		suite.Error(err)
 		suite.Nil(result)
 	})
@@ -230,7 +194,7 @@ func (suite *UserServiceSuite) TestUserService_Destroy() {
 	dummyID := rand.Int()
 
 	suite.Run("when successfully delete a user", func() {
-		suite.repo.On("Destroy", user.ID).Return(user, nil)
+		suite.repo.On("Destroy", user.ID).Return(user, nil).Once()
 
 		result, err := suite.svc.Destroy(user.ID)
 		suite.NoError(err)
@@ -238,7 +202,7 @@ func (suite *UserServiceSuite) TestUserService_Destroy() {
 	})
 
 	suite.Run("when not successfully delete a user", func() {
-		suite.repo.On("Destroy", dummyID).Return(nil, errors.New("dummy error"))
+		suite.repo.On("Destroy", dummyID).Return(nil, errors.New("dummy error")).Once()
 
 		result, err := suite.svc.Destroy(dummyID)
 		suite.Error(err)

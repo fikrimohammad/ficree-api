@@ -8,20 +8,21 @@ import (
 	"github.com/fikrimohammad/ficree-api/domain"
 	"github.com/fikrimohammad/ficree-api/pkg/user/repository/sqlquery"
 	"github.com/go-pg/pg/v10"
+	"github.com/go-pg/pg/v10/orm"
 )
 
 // SQLUserRepository is a struct to wrap database transaction for User
 type SQLUserRepository struct {
-	db *pg.DB
+	db orm.DB
 }
 
 // NewSQLUserRepository is a function to initialize a SQLUserRepository instance
-func NewSQLUserRepository(conn *pg.DB) *SQLUserRepository {
-	return &SQLUserRepository{db: conn}
+func NewSQLUserRepository(db orm.DB) *SQLUserRepository {
+	return &SQLUserRepository{db: db}
 }
 
 // List is a function to fetch users
-func (repo *SQLUserRepository) List(params map[string]interface{}) ([]*domain.User, error) {
+func (repo *SQLUserRepository) List(params domain.UserListInput) ([]*domain.User, error) {
 	var users []*domain.User
 	query := sqlquery.NewListUserQuery(repo.db.Model(&users)).Filter(params)
 	err := query.Select()
@@ -43,6 +44,7 @@ func (repo *SQLUserRepository) Find(id int) (*domain.User, error) {
 			errMsg := fmt.Sprintf(domain.FindUserByIDError, id)
 			return nil, apierror.New(http.StatusNotFound, errMsg)
 		}
+
 		errMsg := fmt.Sprintf(domain.FindUserByIDError, err)
 		return nil, apierror.New(http.StatusInternalServerError, errMsg)
 	}
@@ -59,6 +61,7 @@ func (repo *SQLUserRepository) Create(newUser *domain.User) (*domain.User, error
 			errMsg := fmt.Sprintf(domain.CreateUserError, err)
 			return nil, apierror.New(http.StatusUnprocessableEntity, errMsg)
 		}
+
 		errMsg := fmt.Sprintf(domain.CreateUserError, err)
 		return nil, apierror.New(http.StatusInternalServerError, errMsg)
 	}
@@ -78,6 +81,7 @@ func (repo *SQLUserRepository) Update(id int, modifiedUser *domain.User) (*domai
 			errMsg := fmt.Sprintf(domain.UpdateUserError, err)
 			return nil, apierror.New(http.StatusUnprocessableEntity, errMsg)
 		}
+
 		errMsg := fmt.Sprintf(domain.UpdateUserError, err)
 		return nil, apierror.New(http.StatusInternalServerError, errMsg)
 	}

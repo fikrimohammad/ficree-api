@@ -82,11 +82,11 @@ func (_m *UserRepository) Find(id int) (*domain.User, error) {
 }
 
 // List provides a mock function with given fields: params
-func (_m *UserRepository) List(params map[string]interface{}) ([]*domain.User, error) {
+func (_m *UserRepository) List(params domain.UserListInput) ([]*domain.User, error) {
 	ret := _m.Called(params)
 
 	var r0 []*domain.User
-	if rf, ok := ret.Get(0).(func(map[string]interface{}) []*domain.User); ok {
+	if rf, ok := ret.Get(0).(func(domain.UserListInput) []*domain.User); ok {
 		r0 = rf(params)
 	} else {
 		if ret.Get(0) != nil {
@@ -95,7 +95,7 @@ func (_m *UserRepository) List(params map[string]interface{}) ([]*domain.User, e
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(map[string]interface{}) error); ok {
+	if rf, ok := ret.Get(1).(func(domain.UserListInput) error); ok {
 		r1 = rf(params)
 	} else {
 		r1 = ret.Error(1)
