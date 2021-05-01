@@ -50,11 +50,6 @@ func (q *ListUserQuery) filterBySearchString() {
 }
 
 func (q *ListUserQuery) filterByLimit() {
-	if q.options.Limit == 0 {
-		q.scope = q.scope.Limit(defaultLimit)
-		return
-	}
-
 	limit := q.options.Limit
 	if limit == 0 {
 		limit = defaultLimit
