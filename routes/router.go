@@ -34,7 +34,7 @@ func registerUsersAPI(api fiber.Router) {
 func registerFilesAPI(api fiber.Router) {
 	handler := ServiceContainer().InjectFileHandler()
 	filesAPI := api.Group("/files")
-	filesAPI.Get("/presign", handler.HandleCreatePresignedURL)
+	filesAPI.Get("/presign", handler.HandleGetFileURL)
 }
 
 type router struct{}

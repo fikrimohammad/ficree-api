@@ -5,14 +5,15 @@ type File interface {
 	PublicURL() string
 	UploadURL() (string, error)
 	DownloadURL() (string, error)
+	AsFileOutput() (*FileOutput, error)
 }
 
 // FileRepository .....
 type FileRepository interface {
-	FindByURI(uri string) (File, error)
+	FindByURI(uri string) File
 }
 
 // FileService ......
 type FileService interface {
-	BuildPresignedURL(params map[string]interface{}) (map[string]interface{}, error)
+	GetFileURL(params GenerateFileURLInput) (*FileOutput, error)
 }

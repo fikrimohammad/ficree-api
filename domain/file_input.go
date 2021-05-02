@@ -1,4 +1,4 @@
-package input
+package domain
 
 import (
 	"path/filepath"
@@ -7,7 +7,6 @@ import (
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/google/uuid"
-	"github.com/mitchellh/mapstructure"
 )
 
 var filePathPatternMapping = map[string]string{
@@ -16,30 +15,23 @@ var filePathPatternMapping = map[string]string{
 	"video":      "file_type/random.file_format",
 }
 
-// BuildPresignedURLInput .....
-type BuildPresignedURLInput struct {
-	FileName   string
-	FileFormat string
-	FileType   string
-}
-
-// NewBuildPresignedURLInput ......
-func NewBuildPresignedURLInput(params map[string]interface{}) (*BuildPresignedURLInput, error) {
-	var input BuildPresignedURLInput
-	err := mapstructure.Decode(params, &input)
-	return &input, err
+// GenerateFileURLInput .....
+type GenerateFileURLInput struct {
+	FileName   string `json:"file_name" query:"file_name"`
+	FileFormat string `json:"file_format" query:"file_format"`
+	FileType   string `json:"file_type" query:"file_type"`
 }
 
 // Validate ......
-func (i *BuildPresignedURLInput) Validate() error {
+func (i *GenerateFileURLInput) Validate() error {
 	return validation.ValidateStruct(i,
-		validation.Field(i.FileFormat, validation.Required),
-		validation.Field(i.FileType, validation.Required),
+		validation.Field(&i.FileFormat, validation.Required),
+		validation.Field(&i.FileType, validation.Required),
 	)
 }
 
 // AsURI ......
-func (i *BuildPresignedURLInput) AsURI() string {
+func (i *GenerateFileURLInput) AsURI() string {
 	i.preprocessParams()
 	randomString := uuid.New().String()
 	randomString = strings.Replace(randomString, "-", "", -1)
@@ -53,10 +45,8 @@ func (i *BuildPresignedURLInput) AsURI() string {
 	return uri
 }
 
-func (i *BuildPresignedURLInput) preprocessParams() {
-	var fileName string
-	var fileFormat string
-	var fileType string
+func (i *GenerateFileURLInput) preprocessParams() {
+	var fileName, fileFormat, fileType string
 
 	fileType = strings.TrimSpace(i.FileType)
 	fileType = strings.ToLower(fileType)

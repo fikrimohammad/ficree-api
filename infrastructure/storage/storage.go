@@ -27,6 +27,7 @@ func GetAWSInstance() *AWSStorage {
 	if awsInstance == nil {
 		InitAWSInstance()
 	}
+
 	return awsInstance
 }
 

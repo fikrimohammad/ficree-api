@@ -14,11 +14,6 @@ func NewAWSFileRepository() domain.FileRepository {
 }
 
 // FindByURI .....
-func (repo *AWSFileRepository) FindByURI(uri string) (domain.File, error) {
-	file, err := entity.NewAWSFile(uri)
-	if err != nil {
-		return nil, err
-	}
-
-	return file, nil
+func (repo *AWSFileRepository) FindByURI(uri string) domain.File {
+	return entity.NewAWSFile(uri)
 }

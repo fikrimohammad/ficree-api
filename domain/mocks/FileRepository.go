@@ -13,7 +13,7 @@ type FileRepository struct {
 }
 
 // FindByURI provides a mock function with given fields: uri
-func (_m *FileRepository) FindByURI(uri string) (domain.File, error) {
+func (_m *FileRepository) FindByURI(uri string) domain.File {
 	ret := _m.Called(uri)
 
 	var r0 domain.File
@@ -25,12 +25,5 @@ func (_m *FileRepository) FindByURI(uri string) (domain.File, error) {
 		}
 	}
 
-	var r1 error
-	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(uri)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
+	return r0
 }

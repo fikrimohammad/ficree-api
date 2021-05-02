@@ -14,7 +14,7 @@ import (
 )
 
 // NewAWSFile ......
-func NewAWSFile(uri string) (domain.File, error) {
+func NewAWSFile(uri string) domain.File {
 	var isURL bool = true
 	var isStored bool = true
 	storageSVC := storage.GetAWSInstance()
@@ -34,14 +34,14 @@ func NewAWSFile(uri string) (domain.File, error) {
 	}
 
 	if isURL && !isStored {
-		return &AWSUnStoredFile{URL: uri}, nil
+		return &AWSUnStoredFile{URL: uri}
 	}
 
 	path := strings.Replace(uri, bucketURL, "", -1)
 	path = regexp.MustCompile(`\A\/`).ReplaceAllString(path, "")
 	path = regexp.MustCompile(`\?.*\z`).ReplaceAllString(path, "")
 
-	return &AWSStoredFile{Key: path}, nil
+	return &AWSStoredFile{Key: path}
 }
 
 // AWSStoredFile ......
@@ -53,8 +53,8 @@ type AWSStoredFile struct {
 func (f *AWSStoredFile) PublicURL() string {
 	storageSVC := storage.GetAWSInstance()
 	bucketURL := storageSVC.Bucket.URL
-
-	return bucketURL + "/" + f.Key
+	publicURL, _ := url.Parse(bucketURL + "/" + f.Key)
+	return publicURL.String()
 }
 
 // DownloadURL ......
@@ -107,6 +107,19 @@ func (f *AWSStoredFile) UploadURL() (string, error) {
 	return presignedURL, nil
 }
 
+func (f *AWSStoredFile) AsFileOutput() (*domain.FileOutput, error) {
+	presignedUploadURL, err := f.UploadURL()
+	if err != nil {
+		return nil, err
+	}
+
+	output := &domain.FileOutput{
+		PublicURL:          f.PublicURL(),
+		PresignedUploadURL: presignedUploadURL,
+	}
+	return output, nil
+}
+
 // AWSUnStoredFile ....
 type AWSUnStoredFile struct {
 	URL string
@@ -124,5 +137,14 @@ func (f *AWSUnStoredFile) DownloadURL() (string, error) {
 
 // UploadURL .....
 func (f *AWSUnStoredFile) UploadURL() (string, error) {
-	return f.URL, nil
+	return "", nil
+}
+
+func (f *AWSUnStoredFile) AsFileOutput() (*domain.FileOutput, error) {
+	presignedUploadURL, _ := f.UploadURL()
+	output := &domain.FileOutput{
+		PublicURL:          f.PublicURL(),
+		PresignedUploadURL: presignedUploadURL,
+	}
+	return output, nil
 }
